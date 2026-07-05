@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, MapPin, Calendar, Clock } from "lucide-react";
+import { Sparkles, MapPin, Calendar, Clock, Volume2, VolumeX } from "lucide-react";
+import Admin from "./Admin";
 
 /**
  * Premium Sri Lankan Wedding Invitation Theme
@@ -198,9 +199,36 @@ function CountdownTimer() {
   );
 }
 
-export default function WeddingInvitation() {
+function WeddingInvitation() {
+  const searchParams = new URLSearchParams(window.location.search);
+  const guestPrefix = searchParams.get('prefix');
+  const guestName = searchParams.get('name');
+  const hasGuest = guestPrefix && guestName;
+
   const [isOpened, setIsOpened] = useState(false);
   const [isLowPerformanceMode, setIsLowPerformanceMode] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement>(null);
+
+  const toggleAudio = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play().catch(err => console.log("Audio play failed:", err));
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleOpenEnvelope = () => {
+    setIsOpened(true);
+    if (audioRef.current && !isPlaying) {
+      audioRef.current.play().then(() => {
+        setIsPlaying(true);
+      }).catch(err => console.log("Audio play failed:", err));
+    }
+  };
 
   useEffect(() => {
     const motionMedia = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -238,6 +266,7 @@ export default function WeddingInvitation() {
       className={`h-[100dvh] w-full bg-[#fdfaf5] transition-all duration-1000 ${isOpened ? "overflow-y-auto overflow-x-hidden smooth-mobile-scroll" : "overflow-hidden flex items-center justify-center"
         } relative font-montserrat scroll-smooth`}
     >
+      <audio ref={audioRef} src="/bg_music.mp3" loop />
       <MandalaFrame minimal={isLowPerformanceMode} />
       <FloatingPetals disabled={isLowPerformanceMode} />
 
@@ -268,7 +297,7 @@ export default function WeddingInvitation() {
             {/* Gatefold Envelope */}
             <div
               className="relative w-full max-w-[430px] aspect-[1/1.42] flex items-center justify-center group cursor-pointer perspective-1000"
-              onClick={() => setIsOpened(true)}
+              onClick={handleOpenEnvelope}
             >
               <div className="absolute -inset-8 bg-[radial-gradient(circle,_rgba(159,181,160,0.35)_0%,_rgba(164,190,167,0.2)_45%,_transparent_75%)] blur-3xl opacity-90" />
               <div className="absolute inset-0 bg-gradient-to-b from-[#fffefb] via-[#fff9f2] to-[#fff6ee] rounded-[1.4rem] shadow-[0_28px_80px_-20px_rgba(62,77,63,0.35)] border border-theme-200/80 overflow-hidden" />
@@ -344,7 +373,7 @@ export default function WeddingInvitation() {
                 <div className="absolute inset-1.5 rounded-full border border-theme-400/50" />
                 <div className="absolute inset-3 rounded-full border border-theme-500/30" />
                 <div className="text-center relative z-10">
-                  <p className="font-cinzel text-[1.7rem] font-bold text-stone-800 leading-none">P&M</p>
+                  <p className="font-playball text-[2rem] text-stone-800 leading-none">P&M</p>
                   <div className="h-px w-12 bg-stone-400 mx-auto my-1.5" />
                   <p className="text-[8px] uppercase tracking-[0.35em] font-bold text-stone-600">Open</p>
                 </div>
@@ -372,16 +401,33 @@ export default function WeddingInvitation() {
             className="website-shell relative z-20 w-full"
           >
             {/* Sticky Return Button */}
-            <motion.button
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              onClick={() => setIsOpened(false)}
-              className="fixed top-6 right-6 z-50 bg-white/80 backdrop-blur-md p-3 rounded-full shadow-lg border border-theme-100 text-theme-800 hover:bg-theme-50 transition-colors"
-            >
-              <div className="flex flex-col items-center">
-                <div className="text-[8px] uppercase tracking-widest font-bold">Close</div>
-              </div>
-            </motion.button>
+            <div className="fixed top-6 right-6 z-50 flex items-center gap-3">
+              <motion.button
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                onClick={toggleAudio}
+                className="bg-white/80 backdrop-blur-md p-3 rounded-full shadow-lg border border-theme-100 text-theme-800 hover:bg-theme-50 transition-colors flex items-center justify-center w-[46px] h-[46px]"
+              >
+                {isPlaying ? <Volume2 size={16} /> : <VolumeX size={16} />}
+              </motion.button>
+              
+              <motion.button
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                onClick={() => {
+                  setIsOpened(false);
+                  if (audioRef.current) {
+                    audioRef.current.pause();
+                    setIsPlaying(false);
+                  }
+                }}
+                className="bg-white/80 backdrop-blur-md p-3 rounded-full shadow-lg border border-theme-100 text-theme-800 hover:bg-theme-50 transition-colors h-[46px]"
+              >
+                <div className="flex flex-col items-center justify-center h-full">
+                  <div className="text-[8px] uppercase tracking-widest font-bold">Close</div>
+                </div>
+              </motion.button>
+            </div>
 
             {/* Hero Section */}
             <section className="min-h-[100dvh] w-full flex items-center justify-center p-4 md:p-12 relative overflow-hidden bg-[#fdfaf5]">
@@ -423,9 +469,13 @@ export default function WeddingInvitation() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.8, duration: 1 }}
+                    className="flex flex-col items-center gap-2 md:gap-3"
                   >
-                    <span className="block text-[8px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.6em] text-theme-700 font-bold mb-2">
-                      Please join us
+                    <span className="block font-cinzel text-[9px] md:text-[11px] uppercase tracking-[0.5em] md:tracking-[0.7em] text-theme-600 font-bold">
+                      WITH JOY IN OUR HEARTS
+                    </span>
+                    <span className="block font-playball text-3xl md:text-5xl text-theme-800 drop-shadow-sm">
+                      You're Invited!
                     </span>
                   </motion.div>
 
@@ -500,6 +550,13 @@ export default function WeddingInvitation() {
                   className="flex flex-col items-center mb-8 md:mb-16"
                 >
                   <div className="w-px h-16 md:h-24 bg-gradient-to-b from-transparent to-theme-400 mb-6 md:mb-10" />
+                  {hasGuest && (
+                    <div className="mb-6 pb-6 border-b border-theme-200/50">
+                      <span className="block text-theme-900 font-cinzel text-xl md:text-3xl font-bold tracking-widest drop-shadow-sm">
+                        {guestPrefix} {guestName}
+                      </span>
+                    </div>
+                  )}
                   <p className="text-theme-700 text-[9px] md:text-[12px] tracking-[0.4em] md:tracking-[0.6em] uppercase font-bold text-center leading-loose">
                     You are cordially invited to<br className="hidden md:block" /> celebrate the union of
                   </p>
@@ -517,12 +574,12 @@ export default function WeddingInvitation() {
                   >
                     <div className="absolute inset-2 border border-theme-200/50 rounded-tl-[90px] rounded-br-[90px] md:rounded-tl-[120px] md:rounded-br-[120px] pointer-events-none" />
                     <div className="absolute inset-0 opacity-[0.02] paper-grain pointer-events-none" />
-                    <div className="relative z-10 space-y-4 py-8 md:py-12">
+                    <div className="relative z-10 space-y-4 py-8 md:py-12 flex flex-col items-center">
+                      <h3 className="text-5xl md:text-7xl font-playball text-theme-800 group-hover:scale-110 transition-transform duration-700 pb-4 drop-shadow-sm">Pavithra</h3>
                       <div className="space-y-2">
                         <p className="text-[7px] md:text-[8px] uppercase tracking-[0.4em] font-bold text-stone-400">Beloved daughter of</p>
                         <p className="text-xs md:text-sm font-cinzel text-stone-600 tracking-wide leading-relaxed">Mr. & Mrs. Gunasena Lekamge</p>
                       </div>
-                      <h3 className="text-5xl md:text-7xl font-playball text-theme-800 group-hover:scale-110 transition-transform duration-700 pt-6 drop-shadow-sm">Pavithra</h3>
                     </div>
                   </motion.div>
 
@@ -551,12 +608,12 @@ export default function WeddingInvitation() {
                   >
                     <div className="absolute inset-2 border border-theme-200/50 rounded-tr-[90px] rounded-bl-[90px] md:rounded-tr-[120px] md:rounded-bl-[120px] pointer-events-none" />
                     <div className="absolute inset-0 opacity-[0.02] paper-grain pointer-events-none" />
-                    <div className="relative z-10 space-y-4 py-8 md:py-12">
+                    <div className="relative z-10 space-y-4 py-8 md:py-12 flex flex-col items-center">
+                      <h3 className="text-5xl md:text-7xl font-playball text-theme-800 group-hover:scale-110 transition-transform duration-700 pb-4 drop-shadow-sm">Milinda</h3>
                       <div className="space-y-2">
                         <p className="text-[7px] md:text-[8px] uppercase tracking-[0.4em] font-bold text-stone-400">Beloved son of</p>
                         <p className="text-xs md:text-sm font-cinzel text-stone-600 tracking-wide leading-relaxed">Mr. & Mrs. Mahinda Millangoda</p>
                       </div>
-                      <h3 className="text-5xl md:text-7xl font-playball text-theme-800 group-hover:scale-110 transition-transform duration-700 pt-6 drop-shadow-sm">Milinda</h3>
                     </div>
                   </motion.div>
                 </div>
@@ -1015,4 +1072,11 @@ export default function WeddingInvitation() {
       `}} />
     </main>
   );
+}
+
+export default function App() {
+  if (window.location.pathname === '/admin') {
+    return <Admin />;
+  }
+  return <WeddingInvitation />;
 }
