@@ -373,7 +373,7 @@ function WeddingInvitation() {
                 <div className="absolute inset-1.5 rounded-full border border-theme-400/50" />
                 <div className="absolute inset-3 rounded-full border border-theme-500/30" />
                 <div className="text-center relative z-10">
-                  <p className="font-playball text-[2rem] text-stone-800 leading-none">P&M</p>
+                  <p className="font-playball text-[2rem] text-stone-800 leading-none">P&<span className="-ml-1.5">M</span></p>
                   <div className="h-px w-12 bg-stone-400 mx-auto my-1.5" />
                   <p className="text-[8px] uppercase tracking-[0.35em] font-bold text-stone-600">Open</p>
                 </div>
@@ -471,7 +471,7 @@ function WeddingInvitation() {
                     transition={{ delay: 0.8, duration: 1 }}
                     className="flex flex-col items-center gap-2 md:gap-3"
                   >
-                    <span className="block font-cinzel text-[9px] md:text-[11px] uppercase tracking-[0.5em] md:tracking-[0.7em] text-theme-600 font-bold">
+                    <span className="block font-cinzel text-[11px] md:text-[14px] uppercase tracking-[0.5em] md:tracking-[0.7em] text-theme-600 font-bold">
                       WITH JOY IN OUR HEARTS
                     </span>
                     <span className="block font-playball text-3xl md:text-5xl text-theme-800 drop-shadow-sm">
@@ -486,7 +486,7 @@ function WeddingInvitation() {
                       transition={{ delay: 0.9, duration: 0.8 }}
                       className="text-center -mt-3 md:mt-0 mb-3 md:mb-1"
                     >
-                      <span className="font-cinzel text-[7px] md:text-[10px] uppercase tracking-[0.4em] text-theme-600 font-bold">
+                      <span className="font-cinzel text-[11px] md:text-[14px] uppercase tracking-[0.5em] md:tracking-[0.7em] text-theme-600 font-bold">
                         the wedding of
                       </span>
                     </motion.div>
