@@ -199,8 +199,6 @@ function CountdownTimer() {
   );
 }
 
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbziWbSYBW9rQx5w8D90EteuXu0uQLoXvJyEvb5nEY7QFpDyblDwAhai4g2zkJuF3gtz/exec";
-
 function WeddingInvitation() {
   const searchParams = new URLSearchParams(window.location.search);
   const guestPrefix = searchParams.get('prefix');
@@ -211,70 +209,6 @@ function WeddingInvitation() {
   const [isLowPerformanceMode, setIsLowPerformanceMode] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
-
-  // RSVP Form State
-  const [rsvpName, setRsvpName] = useState(hasGuest ? `${guestPrefix} ${guestName}` : "");
-  const [rsvpGuests, setRsvpGuests] = useState("1");
-  const [rsvpDietary, setRsvpDietary] = useState("");
-  const [isSubmittingRSVP, setIsSubmittingRSVP] = useState(false);
-  const [rsvpStatus, setRsvpStatus] = useState<"idle" | "success" | "error">("idle");
-
-  // Wish Form State
-  const [wishName, setWishName] = useState(hasGuest ? `${guestPrefix} ${guestName}` : "");
-  const [wishMessage, setWishMessage] = useState("");
-  const [isSubmittingWish, setIsSubmittingWish] = useState(false);
-  const [wishStatus, setWishStatus] = useState<"idle" | "success" | "error">("idle");
-
-  const handleRSVPSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!rsvpName.trim()) return;
-
-    setIsSubmittingRSVP(true);
-    setRsvpStatus("idle");
-
-    try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "rsvp", name: rsvpName, guests: rsvpGuests, dietary: rsvpDietary }),
-      });
-      setRsvpStatus("success");
-      setRsvpName("");
-      setRsvpGuests("1");
-      setRsvpDietary("");
-    } catch (error) {
-      setRsvpStatus("error");
-      console.error("RSVP Error:", error);
-    } finally {
-      setIsSubmittingRSVP(false);
-    }
-  };
-
-  const handleWishSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!wishName.trim() || !wishMessage.trim()) return;
-
-    setIsSubmittingWish(true);
-    setWishStatus("idle");
-
-    try {
-      await fetch(GOOGLE_SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: "wish", name: wishName, message: wishMessage }),
-      });
-      setWishStatus("success");
-      setWishName("");
-      setWishMessage("");
-    } catch (error) {
-      setWishStatus("error");
-      console.error("Wish Error:", error);
-    } finally {
-      setIsSubmittingWish(false);
-    }
-  };
 
   const toggleAudio = () => {
     if (audioRef.current) {
@@ -439,7 +373,7 @@ function WeddingInvitation() {
                 <div className="absolute inset-1.5 rounded-full border border-theme-400/50" />
                 <div className="absolute inset-3 rounded-full border border-theme-500/30" />
                 <div className="text-center relative z-10">
-                  <p className="font-playball text-[2rem] text-stone-800 leading-none">P&<span className="-ml-1.5">M</span></p>
+                  <p className="font-playball text-[2rem] text-stone-800 leading-none">P&M</p>
                   <div className="h-px w-12 bg-stone-400 mx-auto my-1.5" />
                   <p className="text-[8px] uppercase tracking-[0.35em] font-bold text-stone-600">Open</p>
                 </div>
@@ -983,27 +917,13 @@ function WeddingInvitation() {
 
                   {/* Premium RSVP Form */}
                   <div className="w-full bg-white/5 backdrop-blur-md p-6 sm:p-8 md:p-12 rounded-[2rem] border border-white/10 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.5)]">
-                    <form className="space-y-8 text-left" onSubmit={handleRSVPSubmit}>
-                      {rsvpStatus === "success" && (
-                        <div className="bg-theme-300/20 border border-theme-300 text-white px-4 py-3 rounded-lg text-sm text-center">
-                          Thank you! Your RSVP has been received.
-                        </div>
-                      )}
-                      {rsvpStatus === "error" && (
-                        <div className="bg-red-500/20 border border-red-500 text-white px-4 py-3 rounded-lg text-sm text-center">
-                          Something went wrong. Please try again.
-                        </div>
-                      )}
+                    <form className="space-y-8 text-left" onSubmit={(e) => e.preventDefault()}>
                       <div className="space-y-3">
                         <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">Full Name</label>
                         <input
                           type="text"
-                          required
-                          value={rsvpName}
-                          onChange={(e) => setRsvpName(e.target.value)}
-                          disabled={isSubmittingRSVP}
                           placeholder="John & Jane Doe"
-                          className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide disabled:opacity-50"
+                          className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide"
                         />
                       </div>
 
@@ -1011,10 +931,8 @@ function WeddingInvitation() {
                         <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">Guests</label>
                         <div className="relative">
                           <select
-                            value={rsvpGuests}
-                            onChange={(e) => setRsvpGuests(e.target.value)}
-                            disabled={isSubmittingRSVP}
-                            className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide appearance-none cursor-pointer disabled:opacity-50"
+                            defaultValue="1"
+                            className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide appearance-none cursor-pointer"
                           >
                             <option value="1" className="bg-[#2c2a26] text-white">1 Guest (Just Me)</option>
                             <option value="2" className="bg-[#2c2a26] text-white">2 Guests</option>
@@ -1032,22 +950,17 @@ function WeddingInvitation() {
                         <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">Dietary Notes</label>
                         <input
                           type="text"
-                          value={rsvpDietary}
-                          onChange={(e) => setRsvpDietary(e.target.value)}
-                          disabled={isSubmittingRSVP}
                           placeholder="Allergies, Vegan, etc."
-                          className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide disabled:opacity-50"
+                          className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide"
                         />
                       </div>
 
                       <div className="pt-10">
                         <button
-                          type="submit"
-                          disabled={isSubmittingRSVP}
-                          className="w-full bg-theme-200 text-stone-900 py-5 rounded-full font-bold uppercase tracking-[0.3em] text-[10px] md:text-sm hover:bg-white hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all duration-300 group inline-flex justify-center items-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="w-full bg-theme-200 text-stone-900 py-5 rounded-full font-bold uppercase tracking-[0.3em] text-[10px] md:text-sm hover:bg-white hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all duration-300 group inline-flex justify-center items-center gap-4"
                         >
                           <span className="w-1.5 h-1.5 bg-stone-900 rotate-45 group-hover:scale-150 transition-transform" />
-                          {isSubmittingRSVP ? "Sending..." : "Send RSVP"}
+                          Send RSVP
                           <span className="w-1.5 h-1.5 bg-stone-900 rotate-45 group-hover:scale-150 transition-transform" />
                         </button>
                       </div>
@@ -1088,49 +1001,27 @@ function WeddingInvitation() {
                       {/* Decorative internal lines */}
                       <div className="absolute inset-2 md:inset-4 border-[0.5px] border-theme-200/50 rounded-tr-[3.5rem] rounded-bl-[3.5rem] pointer-events-none transition-colors duration-700 group-hover:border-theme-300/80" />
 
-                      <form className="space-y-8 text-left relative z-10" onSubmit={handleWishSubmit}>
-                        {wishStatus === "success" && (
-                          <div className="bg-theme-100 border border-theme-300 text-theme-900 px-4 py-3 rounded-lg text-sm text-center">
-                            Thank you! Your message has been received.
-                          </div>
-                        )}
-                        {wishStatus === "error" && (
-                          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm text-center">
-                            Something went wrong. Please try again.
-                          </div>
-                        )}
+                      <form className="space-y-8 text-left relative z-10" onSubmit={(e) => e.preventDefault()}>
                         <div className="space-y-3">
                           <label className="text-[7px] md:text-[9px] uppercase tracking-[0.4em] font-bold text-stone-400 ml-2">Your Name</label>
                           <input
                             type="text"
-                            required
-                            value={wishName}
-                            onChange={(e) => setWishName(e.target.value)}
-                            disabled={isSubmittingWish}
                             placeholder="John Doe"
-                            className="w-full bg-stone-50/50 border-b border-theme-200 px-4 py-4 text-theme-900 placeholder:text-stone-300 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-cinzel text-lg tracking-wide rounded-t-lg disabled:opacity-50"
+                            className="w-full bg-stone-50/50 border-b border-theme-200 px-4 py-4 text-theme-900 placeholder:text-stone-300 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-cinzel text-lg tracking-wide rounded-t-lg"
                           />
                         </div>
                         <div className="space-y-3">
                           <label className="text-[7px] md:text-[9px] uppercase tracking-[0.4em] font-bold text-stone-400 ml-2">Your Message</label>
                           <textarea
                             rows={4}
-                            required
-                            value={wishMessage}
-                            onChange={(e) => setWishMessage(e.target.value)}
-                            disabled={isSubmittingWish}
                             placeholder="Wishing you a lifetime of happiness..."
-                            className="w-full bg-stone-50/50 border-b border-theme-200 px-4 py-4 text-theme-900 placeholder:text-stone-300 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-cinzel text-lg tracking-wide resize-none rounded-t-lg disabled:opacity-50"
+                            className="w-full bg-stone-50/50 border-b border-theme-200 px-4 py-4 text-theme-900 placeholder:text-stone-300 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-cinzel text-lg tracking-wide resize-none rounded-t-lg"
                           />
                         </div>
                         <div className="pt-6 flex justify-center">
-                          <button
-                            type="submit"
-                            disabled={isSubmittingWish}
-                            className="bg-theme-800 text-white px-12 py-5 rounded-full font-bold uppercase tracking-[0.3em] text-[10px] hover:bg-theme-900 hover:shadow-xl hover:shadow-theme-900/20 transition-all duration-300 group/btn inline-flex items-center gap-4 disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
+                          <button className="bg-theme-800 text-white px-12 py-5 rounded-full font-bold uppercase tracking-[0.3em] text-[10px] hover:bg-theme-900 hover:shadow-xl hover:shadow-theme-900/20 transition-all duration-300 group/btn inline-flex items-center gap-4">
                             <span className="w-1.5 h-1.5 bg-white rotate-45 group-hover/btn:scale-150 transition-transform" />
-                            {isSubmittingWish ? "Sending..." : "Send Wishes"}
+                            Send Wishes
                             <span className="w-1.5 h-1.5 bg-white rotate-45 group-hover/btn:scale-150 transition-transform" />
                           </button>
                         </div>
