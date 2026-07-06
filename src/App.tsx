@@ -477,6 +477,9 @@ function WeddingInvitation() {
                     <span className="block font-playball text-3xl md:text-5xl text-theme-800 drop-shadow-sm">
                       You're Invited!
                     </span>
+                    <span className="block font-cinzel text-[8px] md:text-[9px] uppercase tracking-[0.3em] md:tracking-[0.4em] text-theme-500 font-bold mt-1">
+                      to the wedding of
+                    </span>
                   </motion.div>
 
                   <div className="space-y-0 py-4 flex-1 flex flex-col justify-center">
@@ -519,7 +522,7 @@ function WeddingInvitation() {
                     </div>
                     <div className="font-cinzel space-y-1">
                       <p className="text-sm md:text-base text-stone-700 tracking-[0.2em] md:tracking-[0.3em] font-bold">06 AUGUST 2026</p>
-                      <p className="text-[8px] md:text-[9px] text-theme-600 tracking-[0.2em] uppercase font-bold">Colombo, Sri Lanka</p>
+                      <p className="text-[8px] md:text-[9px] text-theme-600 tracking-[0.2em] uppercase font-bold">Lotus Ballroom, Shangri-La Colombo</p>
                     </div>
                   </motion.div>
                 </div>
@@ -902,7 +905,7 @@ function WeddingInvitation() {
                     <div className="h-px w-16 md:w-24 bg-gradient-to-l from-transparent to-theme-300" />
                   </div>
                   <p className="text-stone-300 text-sm md:text-base max-w-md mx-auto leading-relaxed mb-16 tracking-wide font-light">
-                    We would be absolutely thrilled to celebrate with you. Kindly respond by the end of May.
+                    We would be absolutely thrilled to celebrate with you. Kindly respond by <span className="text-white font-cinzel text-lg tracking-widest font-bold ml-1 border-b border-theme-400">14.07.2026</span>.
                   </p>
 
                   {/* Premium RSVP Form */}
