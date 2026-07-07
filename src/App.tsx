@@ -203,7 +203,7 @@ function WeddingInvitation() {
   const searchParams = new URLSearchParams(window.location.search);
   const guestPrefix = searchParams.get('prefix');
   const guestName = searchParams.get('name');
-  const hasGuest = guestPrefix && guestName;
+  const hasGuest = guestPrefix !== null && guestName;
 
   const [isOpened, setIsOpened] = useState(false);
   const [isLowPerformanceMode, setIsLowPerformanceMode] = useState(false);
@@ -563,7 +563,7 @@ function WeddingInvitation() {
                   {hasGuest && (
                     <div className="mb-6 pb-6 border-b border-theme-200/50">
                       <span className="block text-theme-900 font-cinzel text-xl md:text-3xl font-bold tracking-widest drop-shadow-sm">
-                        {guestPrefix} {guestName}
+                        {guestPrefix ? guestPrefix + ' ' : ''}{guestName}
                       </span>
                     </div>
                   )}

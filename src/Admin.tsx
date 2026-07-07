@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const PREFIXES = ['Mr.', 'Mrs.', 'Miss', 'Mr. & Mrs.', 'Family', 'Dear'];
+const PREFIXES = ['', 'Mr.', 'Mrs.', 'Ms.', 'Miss', 'Mr. & Mrs.', 'Family', 'Dear'];
 
 export default function Admin() {
   const [prefix, setPrefix] = useState(PREFIXES[0]);
@@ -8,7 +8,7 @@ export default function Admin() {
 
   const generatedLink = `${window.location.origin}/?prefix=${encodeURIComponent(prefix)}&name=${encodeURIComponent(guestName)}`;
 
-  const messageTemplate = `Dear ${prefix} ${guestName} ❤️
+  const messageTemplate = `Dear ${prefix ? prefix + ' ' : ''}${guestName} ❤️
 
 With joyful hearts, we warmly invite you to celebrate one of the most special days of our lives as we begin our journey together.
 
@@ -44,7 +44,7 @@ With love,
               onChange={(e) => setPrefix(e.target.value)}
               className="w-full border border-theme-300 p-3 rounded-lg focus:outline-none focus:border-theme-500"
             >
-              {PREFIXES.map(p => <option key={p} value={p}>{p}</option>)}
+              {PREFIXES.map(p => <option key={p} value={p}>{p || '(blank)'}</option>)}
             </select>
           </div>
 
