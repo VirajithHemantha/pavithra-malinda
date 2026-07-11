@@ -140,7 +140,7 @@ function FloatingPetals({ disabled = false }: { disabled?: boolean }) {
 }
 
 function CountdownTimer() {
-  const targetDate = new Date("August 6, 2026 09:30:00").getTime();
+  const targetDate = new Date("August 6, 2026 09:15:00").getTime();
   const [timeLeft, setTimeLeft] = useState(targetDate - Date.now());
 
   React.useEffect(() => {
@@ -660,7 +660,7 @@ function WeddingInvitation() {
                     <div className="flex flex-col items-center flex-1">
                       <Clock className="w-6 h-6 md:w-8 md:h-8 text-theme-500 mb-4 opacity-80" />
                       <p className="text-[9px] md:text-[10px] uppercase tracking-[0.3em] md:tracking-[0.4em] text-stone-400 font-bold mb-3">The Time</p>
-                      <p className="font-cinzel text-xl md:text-3xl text-theme-900 tracking-widest font-bold whitespace-nowrap">9:30 AM</p>
+                      <p className="font-cinzel text-xl md:text-3xl text-theme-900 tracking-widest font-bold whitespace-nowrap">9:15 AM</p>
                       <p className="font-cinzel text-xs md:text-sm text-theme-600 tracking-[0.2em] mt-3 uppercase">To 3:30 PM</p>
                     </div>
                   </div>
@@ -671,7 +671,7 @@ function WeddingInvitation() {
 
                       <p className="relative text-theme-800 bg-white shadow-[0_4px_20px_-5px_rgba(0,0,0,0.05)] text-[9px] md:text-[11px] font-bold tracking-[0.3em] md:tracking-[0.4em] uppercase px-6 lg:px-10 py-4 lg:py-5 rounded-full border border-theme-200 flex items-center justify-center gap-4 w-full md:w-auto">
                         <span className="w-1.5 h-1.5 rotate-45 bg-theme-500 shrink-0" />
-                        <span className="whitespace-nowrap">Poruwa Ceremony 9:30 AM</span>
+                        <span className="whitespace-nowrap">Poruwa Ceremony 9:15 AM</span>
                         <span className="w-1.5 h-1.5 rotate-45 bg-theme-500 shrink-0" />
                       </p>
                     </div>
@@ -706,7 +706,7 @@ function WeddingInvitation() {
                   <div className="absolute left-[38px] md:left-1/2 top-4 bottom-4 w-px bg-gradient-to-b from-transparent via-theme-300 to-transparent md:-translate-x-1/2" />
 
                   {[
-                    { time: "9:30 AM", title: "Poruwa Ceremony", desc: "Traditional customs and blessings.", delay: 0 },
+                    { time: "9:15 AM", title: "Poruwa Ceremony", desc: "Traditional customs and blessings.", delay: 0 },
                     { time: "10:30 AM", title: "Reception", desc: "Celebrate with food, drinks & dancing.", delay: 0.2 },
                     { time: "3:30 PM", title: "Going Away", desc: "A fond farewell to the newlyweds.", delay: 0.4 },
                   ].map((event, idx) => (
