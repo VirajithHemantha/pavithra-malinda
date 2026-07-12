@@ -210,6 +210,8 @@ function WeddingInvitation() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isRsvpSubmitting, setIsRsvpSubmitting] = useState(false);
   const [isWishSubmitting, setIsWishSubmitting] = useState(false);
+  const [rsvpSuccess, setRsvpSuccess] = useState(false);
+  const [wishSuccess, setWishSuccess] = useState(false);
 
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbziWbSYBW9rQx5w8D90EteuXu0uQLoXvJyEvb5nEY7QFpDyblDwAhai4g2zkJuF3gtz/exec";
 
@@ -229,12 +231,13 @@ function WeddingInvitation() {
     try {
       await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
+        mode: "no-cors",
         headers: {
           "Content-Type": "text/plain",
         },
         body: JSON.stringify(payload),
       });
-      alert("Thank you for your RSVP! We can't wait to see you.");
+      setRsvpSuccess(true);
       form.reset();
     } catch (error) {
       console.error("RSVP Error:", error);
@@ -259,12 +262,13 @@ function WeddingInvitation() {
     try {
       await fetch(GOOGLE_SCRIPT_URL, {
         method: "POST",
+        mode: "no-cors",
         headers: {
           "Content-Type": "text/plain",
         },
         body: JSON.stringify(payload),
       });
-      alert("Thank you for your beautiful wishes!");
+      setWishSuccess(true);
       form.reset();
     } catch (error) {
       console.error("Wish Error:", error);
@@ -983,60 +987,75 @@ function WeddingInvitation() {
 
                   {/* Premium RSVP Form */}
                   <div className="w-full bg-white/5 backdrop-blur-md p-6 sm:p-8 md:p-12 rounded-[2rem] border border-white/10 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.5)]">
-                    <form className="space-y-8 text-left" onSubmit={handleRsvpSubmit}>
-                      <div className="space-y-3">
-                        <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">Full Name</label>
-                        <input
-                          type="text"
-                          required
-                          name="Name"
-                          placeholder="John & Jane Doe"
-                          className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide"
-                        />
-                      </div>
+                    {rsvpSuccess ? (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="py-12 flex flex-col items-center justify-center space-y-6 text-center"
+                      >
+                        <div className="w-16 h-16 bg-theme-300 rounded-full flex items-center justify-center mb-2 shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                           <svg className="w-8 h-8 text-stone-900" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                        </div>
+                        <h3 className="font-playball text-3xl md:text-5xl text-theme-200">Thank You!</h3>
+                        <p className="text-stone-300 font-light text-sm md:text-base max-w-sm">We've received your RSVP. We can't wait to see you there!</p>
+                        <button onClick={() => setRsvpSuccess(false)} className="mt-8 text-[10px] uppercase tracking-[0.3em] text-theme-300 hover:text-white transition-colors border-b border-theme-300/30 pb-1">Submit Another</button>
+                      </motion.div>
+                    ) : (
+                      <form className="space-y-8 text-left" onSubmit={handleRsvpSubmit}>
+                        <div className="space-y-3">
+                          <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">Full Name</label>
+                          <input
+                            type="text"
+                            required
+                            name="Name"
+                            placeholder="John & Jane Doe"
+                            className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide"
+                          />
+                        </div>
 
-                      <div className="space-y-3">
-                        <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">Guests</label>
-                        <div className="relative">
-                          <select
-                            name="Guests"
-                            defaultValue="1"
-                            className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide appearance-none cursor-pointer"
-                          >
-                            <option value="1" className="bg-[#2c2a26] text-white">1 Guest (Just Me)</option>
-                            <option value="2" className="bg-[#2c2a26] text-white">2 Guests</option>
-                            <option value="3" className="bg-[#2c2a26] text-white">3 Guests</option>
-                            <option value="4" className="bg-[#2c2a26] text-white">4 Guests</option>
-                            <option value="0" className="bg-[#2c2a26] text-theme-300">Regretfully Decline</option>
-                          </select>
-                          <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                            <div className="w-2 h-2 border-r border-b border-theme-300 rotate-45 transform -translate-y-[25%]" />
+                        <div className="space-y-3">
+                          <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">Guests</label>
+                          <div className="relative">
+                            <select
+                              name="Guests"
+                              defaultValue="1"
+                              className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide appearance-none cursor-pointer"
+                            >
+                              <option value="1" className="bg-[#2c2a26] text-white">1 Guest (Just Me)</option>
+                              <option value="2" className="bg-[#2c2a26] text-white">2 Guests</option>
+                              <option value="3" className="bg-[#2c2a26] text-white">3 Guests</option>
+                              <option value="4" className="bg-[#2c2a26] text-white">4 Guests</option>
+                              <option value="0" className="bg-[#2c2a26] text-theme-300">Regretfully Decline</option>
+                            </select>
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                              <div className="w-2 h-2 border-r border-b border-theme-300 rotate-45 transform -translate-y-[25%]" />
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="space-y-3">
-                        <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">Dietary Notes</label>
-                        <input
-                          type="text"
-                          name="DietaryNotes"
-                          placeholder="Allergies, Vegan, etc."
-                          className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide"
-                        />
-                      </div>
+                        <div className="space-y-3">
+                          <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">Dietary Notes</label>
+                          <input
+                            type="text"
+                            name="DietaryNotes"
+                            placeholder="Allergies, Vegan, etc."
+                            className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide"
+                          />
+                        </div>
 
-                      <div className="pt-10">
-                        <button
-                          type="submit"
-                          disabled={isRsvpSubmitting}
-                          className="w-full bg-theme-200 text-stone-900 py-5 rounded-full font-bold uppercase tracking-[0.3em] text-[10px] md:text-sm hover:bg-white hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all duration-300 group inline-flex justify-center items-center gap-4 disabled:opacity-70 disabled:cursor-not-allowed"
-                        >
-                          <span className="w-1.5 h-1.5 bg-stone-900 rotate-45 group-hover:scale-150 transition-transform" />
-                          {isRsvpSubmitting ? "Sending..." : "Send RSVP"}
-                          <span className="w-1.5 h-1.5 bg-stone-900 rotate-45 group-hover:scale-150 transition-transform" />
-                        </button>
-                      </div>
-                    </form>
+                        <div className="pt-10">
+                          <button
+                            type="submit"
+                            disabled={isRsvpSubmitting}
+                            className="w-full bg-theme-200 text-stone-900 py-5 rounded-full font-bold uppercase tracking-[0.3em] text-[10px] md:text-sm hover:bg-white hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all duration-300 group inline-flex justify-center items-center gap-4 disabled:opacity-70 disabled:cursor-not-allowed"
+                          >
+                            <span className="w-1.5 h-1.5 bg-stone-900 rotate-45 group-hover:scale-150 transition-transform" />
+                            {isRsvpSubmitting ? "Sending..." : "Send RSVP"}
+                            <span className="w-1.5 h-1.5 bg-stone-900 rotate-45 group-hover:scale-150 transition-transform" />
+                          </button>
+                        </div>
+                      </form>
+                    )}
                   </div>
                 </motion.div>
               </div>
@@ -1073,39 +1092,54 @@ function WeddingInvitation() {
                       {/* Decorative internal lines */}
                       <div className="absolute inset-2 md:inset-4 border-[0.5px] border-theme-200/50 rounded-tr-[3.5rem] rounded-bl-[3.5rem] pointer-events-none transition-colors duration-700 group-hover:border-theme-300/80" />
 
-                      <form className="space-y-8 text-left relative z-10" onSubmit={handleWishSubmit}>
-                        <div className="space-y-3">
-                          <label className="text-[7px] md:text-[9px] uppercase tracking-[0.4em] font-bold text-stone-400 ml-2">Your Name</label>
-                          <input
-                            type="text"
-                            required
-                            name="Name"
-                            placeholder="John Doe"
-                            className="w-full bg-stone-50/50 border-b border-theme-200 px-4 py-4 text-theme-900 placeholder:text-stone-300 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-cinzel text-lg tracking-wide rounded-t-lg"
-                          />
-                        </div>
-                        <div className="space-y-3">
-                          <label className="text-[7px] md:text-[9px] uppercase tracking-[0.4em] font-bold text-stone-400 ml-2">Your Message</label>
-                          <textarea
-                            rows={4}
-                            required
-                            name="Message"
-                            placeholder="Wishing you a lifetime of happiness..."
-                            className="w-full bg-stone-50/50 border-b border-theme-200 px-4 py-4 text-theme-900 placeholder:text-stone-300 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-cinzel text-lg tracking-wide resize-none rounded-t-lg"
-                          />
-                        </div>
-                        <div className="pt-6 flex justify-center">
-                          <button
-                            type="submit"
-                            disabled={isWishSubmitting}
-                            className="bg-theme-800 text-white px-12 py-5 rounded-full font-bold uppercase tracking-[0.3em] text-[10px] hover:bg-theme-900 hover:shadow-xl hover:shadow-theme-900/20 transition-all duration-300 group/btn inline-flex items-center gap-4 disabled:opacity-70 disabled:cursor-not-allowed"
-                          >
-                            <span className="w-1.5 h-1.5 bg-white rotate-45 group-hover/btn:scale-150 transition-transform" />
-                            {isWishSubmitting ? "Sending..." : "Send Wishes"}
-                            <span className="w-1.5 h-1.5 bg-white rotate-45 group-hover/btn:scale-150 transition-transform" />
-                          </button>
-                        </div>
-                      </form>
+                      {wishSuccess ? (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          className="py-12 flex flex-col items-center justify-center space-y-6 text-center relative z-10"
+                        >
+                          <div className="w-16 h-16 bg-theme-100 rounded-full flex items-center justify-center mb-2 shadow-sm border border-theme-200">
+                             <svg className="w-8 h-8 text-theme-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                          </div>
+                          <h3 className="font-playball text-3xl md:text-5xl text-theme-800">Thank You!</h3>
+                          <p className="text-stone-500 font-light text-sm md:text-base max-w-sm">Your beautiful wishes have been received with love.</p>
+                          <button onClick={() => setWishSuccess(false)} className="mt-8 text-[10px] uppercase tracking-[0.3em] text-theme-400 hover:text-theme-600 transition-colors border-b border-theme-200 pb-1">Submit Another</button>
+                        </motion.div>
+                      ) : (
+                        <form className="space-y-8 text-left relative z-10" onSubmit={handleWishSubmit}>
+                          <div className="space-y-3">
+                            <label className="text-[7px] md:text-[9px] uppercase tracking-[0.4em] font-bold text-stone-400 ml-2">Your Name</label>
+                            <input
+                              type="text"
+                              required
+                              name="Name"
+                              placeholder="John Doe"
+                              className="w-full bg-stone-50/50 border-b border-theme-200 px-4 py-4 text-theme-900 placeholder:text-stone-300 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-cinzel text-lg tracking-wide rounded-t-lg"
+                            />
+                          </div>
+                          <div className="space-y-3">
+                            <label className="text-[7px] md:text-[9px] uppercase tracking-[0.4em] font-bold text-stone-400 ml-2">Your Message</label>
+                            <textarea
+                              rows={4}
+                              required
+                              name="Message"
+                              placeholder="Wishing you a lifetime of happiness..."
+                              className="w-full bg-stone-50/50 border-b border-theme-200 px-4 py-4 text-theme-900 placeholder:text-stone-300 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-cinzel text-lg tracking-wide resize-none rounded-t-lg"
+                            />
+                          </div>
+                          <div className="pt-6 flex justify-center">
+                            <button
+                              type="submit"
+                              disabled={isWishSubmitting}
+                              className="bg-theme-800 text-white px-12 py-5 rounded-full font-bold uppercase tracking-[0.3em] text-[10px] hover:bg-theme-900 hover:shadow-xl hover:shadow-theme-900/20 transition-all duration-300 group/btn inline-flex items-center gap-4 disabled:opacity-70 disabled:cursor-not-allowed"
+                            >
+                              <span className="w-1.5 h-1.5 bg-white rotate-45 group-hover/btn:scale-150 transition-transform" />
+                              {isWishSubmitting ? "Sending..." : "Send Wishes"}
+                              <span className="w-1.5 h-1.5 bg-white rotate-45 group-hover/btn:scale-150 transition-transform" />
+                            </button>
+                          </div>
+                        </form>
+                      )}
                     </div>
 
                     <div className="mt-32 md:mt-48 space-y-6 flex flex-col items-center relative w-full">
