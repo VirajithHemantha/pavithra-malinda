@@ -208,6 +208,71 @@ function WeddingInvitation() {
   const [isOpened, setIsOpened] = useState(false);
   const [isLowPerformanceMode, setIsLowPerformanceMode] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isRsvpSubmitting, setIsRsvpSubmitting] = useState(false);
+  const [isWishSubmitting, setIsWishSubmitting] = useState(false);
+
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbziWbSYBW9rQx5w8D90EteuXu0uQLoXvJyEvb5nEY7QFpDyblDwAhai4g2zkJuF3gtz/exec";
+
+  const handleRsvpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsRsvpSubmitting(true);
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+
+    const payload = {
+      type: "rsvp",
+      name: formData.get("Name")?.toString() || "",
+      guests: formData.get("Guests")?.toString() || "",
+      dietary: formData.get("DietaryNotes")?.toString() || ""
+    };
+
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain",
+        },
+        body: JSON.stringify(payload),
+      });
+      alert("Thank you for your RSVP! We can't wait to see you.");
+      form.reset();
+    } catch (error) {
+      console.error("RSVP Error:", error);
+      alert("Something went wrong. Please try again later.");
+    } finally {
+      setIsRsvpSubmitting(false);
+    }
+  };
+
+  const handleWishSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsWishSubmitting(true);
+    const form = e.target as HTMLFormElement;
+    const formData = new FormData(form);
+
+    const payload = {
+      type: "wish",
+      name: formData.get("Name")?.toString() || "",
+      message: formData.get("Message")?.toString() || ""
+    };
+
+    try {
+      await fetch(GOOGLE_SCRIPT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "text/plain",
+        },
+        body: JSON.stringify(payload),
+      });
+      alert("Thank you for your beautiful wishes!");
+      form.reset();
+    } catch (error) {
+      console.error("Wish Error:", error);
+      alert("Something went wrong. Please try again later.");
+    } finally {
+      setIsWishSubmitting(false);
+    }
+  };
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const toggleAudio = () => {
@@ -918,11 +983,13 @@ function WeddingInvitation() {
 
                   {/* Premium RSVP Form */}
                   <div className="w-full bg-white/5 backdrop-blur-md p-6 sm:p-8 md:p-12 rounded-[2rem] border border-white/10 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.5)]">
-                    <form className="space-y-8 text-left" onSubmit={(e) => e.preventDefault()}>
+                    <form className="space-y-8 text-left" onSubmit={handleRsvpSubmit}>
                       <div className="space-y-3">
                         <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">Full Name</label>
                         <input
                           type="text"
+                          required
+                          name="Name"
                           placeholder="John & Jane Doe"
                           className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide"
                         />
@@ -932,6 +999,7 @@ function WeddingInvitation() {
                         <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">Guests</label>
                         <div className="relative">
                           <select
+                            name="Guests"
                             defaultValue="1"
                             className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide appearance-none cursor-pointer"
                           >
@@ -951,6 +1019,7 @@ function WeddingInvitation() {
                         <label className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] font-bold text-theme-200 ml-2">Dietary Notes</label>
                         <input
                           type="text"
+                          name="DietaryNotes"
                           placeholder="Allergies, Vegan, etc."
                           className="w-full bg-transparent border-b border-white/20 px-2 py-3 text-white placeholder:text-white/30 focus:outline-none focus:border-theme-300 transition-colors font-cinzel text-lg md:text-xl tracking-wide"
                         />
@@ -958,10 +1027,12 @@ function WeddingInvitation() {
 
                       <div className="pt-10">
                         <button
-                          className="w-full bg-theme-200 text-stone-900 py-5 rounded-full font-bold uppercase tracking-[0.3em] text-[10px] md:text-sm hover:bg-white hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all duration-300 group inline-flex justify-center items-center gap-4"
+                          type="submit"
+                          disabled={isRsvpSubmitting}
+                          className="w-full bg-theme-200 text-stone-900 py-5 rounded-full font-bold uppercase tracking-[0.3em] text-[10px] md:text-sm hover:bg-white hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] transition-all duration-300 group inline-flex justify-center items-center gap-4 disabled:opacity-70 disabled:cursor-not-allowed"
                         >
                           <span className="w-1.5 h-1.5 bg-stone-900 rotate-45 group-hover:scale-150 transition-transform" />
-                          Send RSVP
+                          {isRsvpSubmitting ? "Sending..." : "Send RSVP"}
                           <span className="w-1.5 h-1.5 bg-stone-900 rotate-45 group-hover:scale-150 transition-transform" />
                         </button>
                       </div>
@@ -1002,11 +1073,13 @@ function WeddingInvitation() {
                       {/* Decorative internal lines */}
                       <div className="absolute inset-2 md:inset-4 border-[0.5px] border-theme-200/50 rounded-tr-[3.5rem] rounded-bl-[3.5rem] pointer-events-none transition-colors duration-700 group-hover:border-theme-300/80" />
 
-                      <form className="space-y-8 text-left relative z-10" onSubmit={(e) => e.preventDefault()}>
+                      <form className="space-y-8 text-left relative z-10" onSubmit={handleWishSubmit}>
                         <div className="space-y-3">
                           <label className="text-[7px] md:text-[9px] uppercase tracking-[0.4em] font-bold text-stone-400 ml-2">Your Name</label>
                           <input
                             type="text"
+                            required
+                            name="Name"
                             placeholder="John Doe"
                             className="w-full bg-stone-50/50 border-b border-theme-200 px-4 py-4 text-theme-900 placeholder:text-stone-300 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-cinzel text-lg tracking-wide rounded-t-lg"
                           />
@@ -1015,14 +1088,20 @@ function WeddingInvitation() {
                           <label className="text-[7px] md:text-[9px] uppercase tracking-[0.4em] font-bold text-stone-400 ml-2">Your Message</label>
                           <textarea
                             rows={4}
+                            required
+                            name="Message"
                             placeholder="Wishing you a lifetime of happiness..."
                             className="w-full bg-stone-50/50 border-b border-theme-200 px-4 py-4 text-theme-900 placeholder:text-stone-300 focus:outline-none focus:border-theme-400 focus:bg-white transition-all font-cinzel text-lg tracking-wide resize-none rounded-t-lg"
                           />
                         </div>
                         <div className="pt-6 flex justify-center">
-                          <button className="bg-theme-800 text-white px-12 py-5 rounded-full font-bold uppercase tracking-[0.3em] text-[10px] hover:bg-theme-900 hover:shadow-xl hover:shadow-theme-900/20 transition-all duration-300 group/btn inline-flex items-center gap-4">
+                          <button
+                            type="submit"
+                            disabled={isWishSubmitting}
+                            className="bg-theme-800 text-white px-12 py-5 rounded-full font-bold uppercase tracking-[0.3em] text-[10px] hover:bg-theme-900 hover:shadow-xl hover:shadow-theme-900/20 transition-all duration-300 group/btn inline-flex items-center gap-4 disabled:opacity-70 disabled:cursor-not-allowed"
+                          >
                             <span className="w-1.5 h-1.5 bg-white rotate-45 group-hover/btn:scale-150 transition-transform" />
-                            Send Wishes
+                            {isWishSubmitting ? "Sending..." : "Send Wishes"}
                             <span className="w-1.5 h-1.5 bg-white rotate-45 group-hover/btn:scale-150 transition-transform" />
                           </button>
                         </div>
