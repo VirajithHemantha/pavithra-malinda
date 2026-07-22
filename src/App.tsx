@@ -982,7 +982,7 @@ function WeddingInvitation() {
                     <div className="h-px w-16 md:w-24 bg-gradient-to-l from-transparent to-theme-300" />
                   </div>
                   <p className="text-stone-300 text-sm md:text-base max-w-md mx-auto leading-relaxed mb-16 tracking-wide font-light">
-                    We would be absolutely thrilled to celebrate with you. Kindly respond by <span className="text-white font-cinzel text-lg tracking-widest font-bold ml-1 border-b border-theme-400">14.07.2026</span>.
+                    We would be absolutely thrilled to celebrate with you. Kindly respond by <span className="text-white font-cinzel text-lg tracking-widest font-bold ml-1 border-b border-theme-400">25.07.2026</span>.
                   </p>
 
                   {/* Premium RSVP Form */}
